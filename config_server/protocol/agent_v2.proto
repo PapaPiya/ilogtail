@@ -1,0 +1,44 @@
+syntax = "proto3";
+package configserver.protov2;
+option go_package = "/configserver_protov2";
+
+import "google/protobuf/struct.proto";
+
+// Define response code
+enum RespCode {
+  ACCEPT = 0;
+  INVALID_PARAMETER = 1;
+  INTERNAL_SERVER_ERROR = 2;
+}
+
+// Define command
+message Command {
+  string id = 1;                  // Required, Command id
+  string type = 2;                // Required, Command type
+  string name = 3;                // Optional, Command name
+  map<string, string> args = 4;   // Command's parameter arrays
+}
+
+// API: /Agent/HeartBeat?agentId=<agentId>
+message HeartBeatRequest {
+}
+
+message HeartBeatResponse {
+  RespCode code = 1;
+  string message = 2;
+
+  repeated Command custom_commands = 3;     // Agent received commands
+}
+
+// Method: POST
+// Path: /Agent/ExecuteCommand/<CommandType>?agentId=<agentId>
+message CommandRequest {
+  google.protobuf.Struct request_body = 1;      // Optional, Request Body
+}
+
+message CommandResponse {
+  RespCode code = 1;
+  string message = 2;
+
+  google.protobuf.Struct response_body = 3;     // Optional, Response Body
+}
